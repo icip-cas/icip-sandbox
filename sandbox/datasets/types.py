@@ -54,6 +54,7 @@ class TestConfig(BaseModel):
     is_fewshot: Optional[bool] = None
     compile_timeout: Optional[float] = None
     run_timeout: Optional[float] = None
+    mem_limit: Optional[int] = None
     custom_extract_logic: Optional[str] = None
     provided_data: Optional[List[Dict[str, Any]] | Dict[str, Any]] = None
     extra: Dict[str, Any] = {}
@@ -96,8 +97,9 @@ class GetPromptByIdRequest(BaseModel):
 
 
 class SubmitRequest(BaseModel):
-    dataset: str
-    id: int | str
+    # Set default value to '' to avoid pydantic error
+    dataset: str = Field(default="")
+    id: int | str = Field(default=0)
     completion: str
     config: TestConfig
 

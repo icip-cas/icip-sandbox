@@ -1,11 +1,24 @@
-HOST ?= 0.0.0.0
+SHELL = /bin/bash
+HOST ?= $(shell hostname -I | awk '{print $$1}')
 PORT ?= 8080
 TEST_NP ?= 4
+WORKERS ?= 4
+MAX_MEM ?= unlimited
 run:
 	uvicorn sandbox.server.server:app --reload --host $(HOST) --port $(PORT)
 
 run-online:
-	uvicorn sandbox.server.server:app --host $(HOST) --port $(PORT)
+	echo "SAVE_BAD_CASES: $${SAVE_BAD_CASES}"
+	ulimit -Sv $(MAX_MEM) && \
+	ulimit -a && \
+	uvicorn sandbox.server.server:app --host $(HOST) --port $(PORT) --workers $(WORKERS)
+
+run-distributed:
+	echo "SAVE_BAD_CASES: $${SAVE_BAD_CASES}"
+	bash write_address.sh $(HOST) $(PORT) & 
+	ulimit -Sv $(MAX_MEM) && \
+	ulimit -a && \
+	uvicorn sandbox.server.server:app --host $(HOST) --port $(PORT) --workers $(WORKERS)
 
 build-server-image:
 	docker build . -f scripts/Dockerfile.server -t sandbox:server

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 import os
 import traceback
 from enum import Enum
@@ -20,6 +21,10 @@ from typing import Dict, List, Optional, Tuple
 import structlog
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
+
+from datetime import datetime
+import os
+import tempfile
 
 from sandbox.runners import (
     CODE_RUNNERS,
@@ -40,6 +45,7 @@ logger = structlog.stdlib.get_logger()
 class RunCodeRequest(BaseModel):
     compile_timeout: float = Field(10, description='compile timeout for compiled languages')
     run_timeout: float = Field(10, description='code run timeout')
+    mem_limit: Optional[int] = Field(None, description='memory limit for the code')
     code: str = Field(..., examples=['print("hello")'], description='the code to run')
     stdin: Optional[str] = Field(None, examples=[''], description='optional string to pass into stdin')
     language: Language = Field(..., examples=['python'], description='the language or execution mode to run the code')
@@ -105,7 +111,7 @@ async def run_code(request: RunCodeRequest):
     resp = RunCodeResponse(status=RunStatus.Success, message='', executor_pod_name=os.environ.get('MY_POD_NAME'))
     try:
         logger.debug(
-            f'start processing {request.language} request with code ```\n{request.code[:100]}\n``` and files {list(request.files.keys())}...'
+            f'start processing {request.language} request with code ```\n{request.code[:1000]}\n``` and files {list(request.files.keys())}...'
         )
         result = await CODE_RUNNERS[request.language](CodeRunArgs(**request.model_dump()))
 
@@ -120,6 +126,22 @@ async def run_code(request: RunCodeRequest):
         logger.warning(message)
         resp.message = message
         resp.status = RunStatus.SandboxError
+
+    
+    # if os.getenv('SAVE_BAD_CASES') == 'true':
+    # if all([o.exec_info.status == 'SandboxError' for o in outcomes]):
+    # Try to write the code to folder `output/{current_date}/`
+    if os.getenv('SAVE_BAD_CASES', default='') == 'true' and resp.status == RunStatus.SandboxError:
+        # Create the folder if it does not exist
+        os.makedirs('output', exist_ok=True)
+        output_dir = os.path.join('output', datetime.now().strftime("%Y-%m-%d"))
+        os.makedirs(output_dir, exist_ok=True)
+        # Write the code to a file
+        with tempfile.NamedTemporaryFile(mode='w', dir=output_dir, suffix='.json', delete=False) as f:
+            resp_json = resp.model_dump()
+            resp_json['code'] = request.code
+            resp_json['stdin'] = request.stdin
+            f.write(json.dumps(resp_json, indent=2))
 
     return resp
 

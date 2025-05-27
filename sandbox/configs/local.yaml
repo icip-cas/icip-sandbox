@@ -7,7 +7,7 @@ dataset:
       sources:
         - type: local
           path: sandbox/tests/datasets/samples
-  max_runner_concurrency: 3
+  max_runner_concurrency: 5
   default_dataset_table: code_eval_${dataset_id}
   registry:
     - module_path: sandbox.datasets.aider_benchmark
@@ -117,6 +117,6 @@ sandbox:
   isolation: none
   cleanup_process: false
   restore_bash: false
-  max_concurrency: 34
+  max_concurrency: 0
 common:
   logging_color: true

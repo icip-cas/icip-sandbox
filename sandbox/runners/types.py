@@ -39,6 +39,7 @@ class CodeRunArgs(BaseModel):
     run_timeout: float = 10
     stdin: Optional[str] = None
     fetch_files: List[str] = []
+    mem_limit: Optional[int] = None
 
 
 class CodeRunResult(BaseModel):
@@ -76,12 +77,12 @@ class RunJupyterResult(BaseModel):
     files: Dict[str, str] = {}
 
 
-Language = Literal['python', 'cpp', 'nodejs', 'go', 'go_test', 'java', 'php', 'csharp', 'bash', 'typescript', 'sql',
+Language = Literal['python', 'cpp', 'nodejs', 'javascript', 'go', 'go_test', 'java', 'php', 'csharp', 'bash', 'typescript', 'sql',
                    'rust', 'cuda', 'lua', 'R', 'perl', 'D_ut', 'ruby', 'scala', 'julia', 'pytest', 'junit',
                    'kotlin_script', 'jest', 'verilog', 'python_gpu', 'lean', 'swift', 'racket']
 compile_languages: List[Language] = ['cpp', 'go', 'java']
 cpu_languages: List[Language] = [
-    'python', 'cpp', 'nodejs', 'go', 'go_test', 'java', 'php', 'csharp', 'bash', 'typescript', 'sql', 'rust', 'lua',
+    'python', 'cpp', 'nodejs', 'javascript', 'go', 'go_test', 'java', 'php', 'csharp', 'bash', 'typescript', 'sql', 'rust', 'lua',
     'R', 'perl', 'D_ut', 'ruby', 'scala', 'julia', 'pytest', 'junit', 'kotlin_script', 'jest', 'verilog', 'lean',
     'swift', 'racket'
 ]

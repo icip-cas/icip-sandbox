@@ -39,12 +39,12 @@ async def lifespan(app: FastAPI):
     await sqlite.disconnect()
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan, max_request_body_size=128 * 1024 * 1024)  # 128 MB
 app.mount('/playground',
           StaticFiles(directory=os.path.abspath(os.path.join(__file__, '../../pages')), html=True),
           name='playground')
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan, max_request_body_size=128 * 1024 * 1024)  # 128 MB
 app.mount('/SandboxFusion',
           StaticFiles(directory=os.path.abspath(os.path.join(__file__, '../../../docs/build')), html=True),
           name='doc-site')

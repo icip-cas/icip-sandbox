@@ -39,8 +39,12 @@ async def run_command_bare(command: str | List[str],
                            cwd: Optional[str] = None,
                            extra_env: Optional[Dict[str, str]] = {},
                            use_exec: bool = False,
+                           mem_limit: Optional[int] = None,
                            preexec_fn=None) -> CommandRunResult:
     try:
+        if mem_limit is not None:
+            if isinstance(command, str):
+                command = f"ulimit -v {mem_limit} && {command}"
         logger.debug(f'running command {command}')
         if use_exec:
             p = await asyncio.create_subprocess_exec(*command,
@@ -124,6 +128,7 @@ async def run_commands(compile_command: Optional[str], run_command: str, cwd: st
                                              args.stdin,
                                              cwd,
                                              extra_env,
+                                             mem_limit=args.mem_limit,
                                              preexec_fn=preexec_fn)
         for filename in args.fetch_files:
             fp = os.path.abspath(os.path.join(cwd, filename))
@@ -151,7 +156,8 @@ async def run_commands(compile_command: Optional[str], run_command: str, cwd: st
             if compile_res is None or (compile_res.status == CommandRunStatus.Finished and
                                        compile_res.return_code == 0):
                 run_res = await run_command_bare(prefix + ['bash', '-c', f'cd {cwd} && {run_command}'],
-                                                 args.run_timeout, args.stdin, cwd, extra_env, True)
+                                                 args.run_timeout, args.stdin, cwd, extra_env, True,
+                                                 mem_limit=args.mem_limit)
 
             for filename in args.fetch_files:
                 fp = os.path.join(root, os.path.abspath(os.path.join(cwd, filename))[1:])
