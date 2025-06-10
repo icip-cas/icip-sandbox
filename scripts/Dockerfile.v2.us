@@ -1,4 +1,4 @@
-FROM vemlp-cn-beijing.cr.volces.com/preset-images/code-sandbox:server-20241204
+FROM volcengine/sandbox-fusion:server-20241204
 
 RUN mkdir -p /var/run/sshd
 RUN apt-get update

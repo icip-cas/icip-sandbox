@@ -71,7 +71,7 @@ Jupyter mode kernels:
 
 **Docker**
 
-Use the provided docker `[Dockerhub URL]` 
+Use the provided docker `zhengxin1999/icip-sandbox:v1` 
 
 Or, build the image locally:
 
