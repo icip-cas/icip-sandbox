@@ -137,7 +137,7 @@ Here is an example of how to use the `common_evaluate_batch` API for testing a+b
 ```python
 # stdio evaluate
 payload = {
-  "completion": """```python\na, b = map(int, input().split())\nprint(a + b)\n```""",
+    "completion": """```python\na, b = map(int, input().split())\nprint(a + b)\n```""",
     "config": {
         "language": "python",
         "run_timeout": 10,
@@ -154,73 +154,76 @@ payload = {
 response = requests.post('http://0.0.0.0:8080/common_evaluate_batch', json=payload)
 result = response.json()
 ```
-And the response would be:
+
 <details>
 <summary>Response</summary>
+
 ```json
 {
-  "id": 0,
-  "accepted": true,
-  "extracted_code": "a, b = map(int, input().split())\nprint(a + b)",
-  "full_code": null,
-  "test_code": null,
-  "tests": [
-    {
-      "passed": true,
-      "exec_info": {
-        "status": "Success",
-        "message": "",
-        "compile_result": null,
-        "run_result": {
-          "status": "Finished",
-          "execution_time": 0.0040967464447021484,
-          "return_code": 0,
-          "stdout": "3\n",
-          "stderr": ""
+    "id": 0,
+    "accepted": true,
+    "extracted_code": "a, b = map(int, input().split())\nprint(a + b)",
+    "full_code": null,
+    "test_code": null,
+    "tests": [
+        {
+            "passed": true,
+            "exec_info": {
+                "status": "Success",
+                "message": "",
+                "compile_result": null,
+                "run_result": {
+                    "status": "Finished",
+                    "execution_time": 0.0040967464447021484,
+                    "return_code": 0,
+                    "stdout": "3\n",
+                    "stderr": ""
+                },
+                "executor_pod_name": null,
+                "files": {}
+            },
+            "test_info": {
+                "input": {
+                    "stdin": "1 2"
+                },
+                "output": {
+                    "stdout": "3"
+                }
+            }
         },
-        "executor_pod_name": null,
-        "files": {}
-      },
-      "test_info": {
-        "input": {
-          "stdin": "1 2"
-        },
-        "output": {
-          "stdout": "3"
+        {
+            "passed": true,
+            "exec_info": {
+                "status": "Success",
+                "message": "",
+                "compile_result": null,
+                "run_result": {
+                    "status": "Finished",
+                    "execution_time": 0.017037630081176758,
+                    "return_code": 0,
+                    "stdout": "7\n",
+                    "stderr": ""
+                },
+                "executor_pod_name": null,
+                "files": {}
+            },
+            "test_info": {
+                "input": {
+                    "stdin": "3 4"
+                },
+                "output": {
+                    "stdout": "7"
+                }
+            }
         }
-      }
-    },
-    {
-      "passed": true,
-      "exec_info": {
-        "status": "Success",
-        "message": "",
-        "compile_result": null,
-        "run_result": {
-          "status": "Finished",
-          "execution_time": 0.017037630081176758,
-          "return_code": 0,
-          "stdout": "7\n",
-          "stderr": ""
-        },
-        "executor_pod_name": null,
-        "files": {}
-      },
-      "test_info": {
-        "input": {
-          "stdin": "3 4"
-        },
-        "output": {
-          "stdout": "7"
-        }
-      }
-    }
-  ],
-  "extracted_type": null,
-  "extra": null
+    ],
+    "extracted_type": null,
+    "extra": null
 }
 ```
+
 </details>
+
 Also an example of function call evaluation for the same problem:
 ```python
 # function evaluate batch
@@ -241,78 +244,70 @@ payload = {
 response = requests.post('http://0.0.0.0:8080/common_evaluate_batch', json=payload)
 result = response.json()
 ```
-With the response:
+
 <details>
 <summary>Response</summary>
+
 ```json
 {
-  "id": 0,
-  "accepted": true,
-  "extracted_code": "def add(a, b):\n    return a + b",
-  "full_code": null,
-  "test_code": null,
-  "tests": [
-    {
-      "passed": true,
-      "exec_info": {
-        "status": "Success",
-        "message": "",
-        "compile_result": null,
-        "run_result": {
-          "status": "Finished",
-          "execution_time": 0.00021147727966308594,
-          "return_code": 0,
-          "stdout": "",
-          "stderr": ""
+    "id": 0,
+    "accepted": true,
+    "extracted_code": "def add(a, b):\n    return a + b",
+    "full_code": null,
+    "test_code": null,
+    "tests": [
+        {
+            "passed": true,
+            "exec_info": {
+                "status": "Success",
+                "message": "",
+                "compile_result": null,
+                "run_result": {
+                    "status": "Finished",
+                    "execution_time": 0.00021147727966308594,
+                    "return_code": 0,
+                    "stdout": "",
+                    "stderr": ""
+                },
+                "executor_pod_name": null,
+                "files": {}
+            },
+            "test_info": {
+                "type": "function_call",
+                "fn_name": "add",
+                "input": [1, 2],
+                "output": [3]
+            }
         },
-        "executor_pod_name": null,
-        "files": {}
-      },
-      "test_info": {
-        "type": "function_call",
-        "fn_name": "add",
-        "input": [
-          1,
-          2
-        ],
-        "output": [
-          3
-        ]
-      }
-    },
-    {
-      "passed": true,
-      "exec_info": {
-        "status": "Success",
-        "message": "",
-        "compile_result": null,
-        "run_result": {
-          "status": "Finished",
-          "execution_time": 0.01851511001586914,
-          "return_code": 0,
-          "stdout": "",
-          "stderr": ""
-        },
-        "executor_pod_name": null,
-        "files": {}
-      },
-      "test_info": {
-        "type": "function_call",
-        "fn_name": "add",
-        "input": [
-          3,
-          4
-        ],
-        "output": [
-          7
-        ]
-      }
-    }
-  ],
-  "extracted_type": null,
-  "extra": null
+        {
+            "passed": true,
+            "exec_info": {
+                "status": "Success",
+                "message": "",
+                "compile_result": null,
+                "run_result": {
+                    "status": "Finished",
+                    "execution_time": 0.01851511001586914,
+                    "return_code": 0,
+                    "stdout": "",
+                    "stderr": ""
+                },
+                "executor_pod_name": null,
+                "files": {}
+            },
+            "test_info": {
+                "type": "function_call",
+                "fn_name": "add",
+                "input": [3, 4],
+                "output": [7]
+            }
+        }
+    ],
+    "extracted_type": null,
+    "extra": null
 }
 ```
+
 </details>
 
 ### Dev & Test
