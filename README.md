@@ -1,6 +1,6 @@
 # Code Sandbox
 
-A scalable sandbox for better accomodation of code-RL training.
+A scalable sandbox for better accommodation of code-RL training.
 
 ## Table of Contents
 - [Updates](#updates)
