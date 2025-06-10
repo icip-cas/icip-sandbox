@@ -15,7 +15,7 @@ run-online:
 
 run-distributed:
 	echo "SAVE_BAD_CASES: $${SAVE_BAD_CASES}"
-	bash write_address.sh $(HOST) $(PORT) & 
+	bash deploy/write_address.sh $(HOST) $(PORT) & 
 	ulimit -Sv $(MAX_MEM) && \
 	ulimit -a && \
 	uvicorn sandbox.server.server:app --host $(HOST) --port $(PORT) --workers $(WORKERS)
