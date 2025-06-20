@@ -1,4 +1,3 @@
-# Copyright 2025 Chinese Information Processing Laboratory, Institute of Software, Chinese Academy of Sciences.
 # Copyright 2024 Bytedance Ltd. and/or its affiliates
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 from typing import Any, Dict, List, Optional
 
 import json
@@ -195,14 +195,15 @@ def convert_batch_data_format(data: Dict[str, Any], data_format='stdin_stdout') 
     """
     test_cases = data['test_cases']
     test = []
+    dataset = test_cases.get('dataset', None)
     for i in range(len(test_cases['input'])):
         the_input = test_cases['input'][i]
         the_output = test_cases['output'][i]
-        if isinstance(the_input, str):
-            # For LivecodeBench data, if the input is a string, we need to convert it to a list
+        if isinstance(the_input, str) and data_format == 'function_call' and dataset == 'LiveCodeBench':
+            # For LiveCodeBench data, if the input is a string, we need to convert it to a list
             try:
                 the_input = [json.loads(line) for line in the_input.split("\n")]
-                the_output = json.loads(the_output)
+                the_output = [json.loads(the_output)]
             except json.JSONDecodeError:
                 pass
 
@@ -212,6 +213,7 @@ def convert_batch_data_format(data: Dict[str, Any], data_format='stdin_stdout') 
             "input": the_input,
             "output": the_output,
         })
+    logging.info(f"Test: {test}, format: {data_format}, dataset: {dataset}")
     return {'test_cases': test}
 
 
