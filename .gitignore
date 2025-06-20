@@ -181,3 +181,5 @@ runtime/lean/.lake/
 
 server/*.txt
 server/*.conf
+
+supervisor/logfile
