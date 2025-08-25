@@ -131,6 +131,24 @@ For running the sandbox across multiple machines:
   2. Re-run `bash deploy/start_distributed_nginx.sh` on the main node
   - The nginx configuration will automatically update to include all available worker nodes
 
+#### Docker Deployment
+To run the sandbox server using Docker with health check and automatic restart on failure:
+
+```bash
+docker run \
+    --privileged \
+    -p 8080:8080 \
+    -p 8081:8081 \
+    --volume ~/icip-sandbox:/icip-sandbox \
+    -w /icip-sandbox \
+    --health-cmd='python /icip-sandbox/deploy/a_plus_b.py || exit 1' \
+    --health-interval=2s \
+    -itd \
+    --restart unless-stopped \
+    zhengxin1999/icip-sandbox:v1 \
+    make run-online
+```
+
 ### Calling the sandbox
 In additioon to the originally provided dataset-specific evaluation APIs, we also provide a unified evaluation API, which includes both stdio and function call evaluation modes on various languages.
 Here is an example of how to use the `common_evaluate_batch` API for testing a+b problem with standard input/output format.

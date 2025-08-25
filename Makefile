@@ -11,14 +11,14 @@ run-online:
 	echo "SAVE_BAD_CASES: $${SAVE_BAD_CASES}"
 	ulimit -Sv $(MAX_MEM) && \
 	ulimit -a && \
-	uvicorn sandbox.server.server:app --host $(HOST) --port $(PORT) --workers $(WORKERS)
+	uvicorn sandbox.server.server:app --host $(HOST) --port $(PORT) --workers $(WORKERS) --loop asyncio
 
 run-distributed:
 	echo "SAVE_BAD_CASES: $${SAVE_BAD_CASES}"
 	bash deploy/write_address.sh $(HOST) $(PORT) & 
 	ulimit -Sv $(MAX_MEM) && \
 	ulimit -a && \
-	uvicorn sandbox.server.server:app --host $(HOST) --port $(PORT) --workers $(WORKERS)
+	uvicorn sandbox.server.server:app --host $(HOST) --port $(PORT) --workers $(WORKERS) --loop asyncio
 
 build-server-image:
 	docker build . -f scripts/Dockerfile.server -t sandbox:server
