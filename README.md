@@ -5,6 +5,7 @@ A scalable sandbox for better accommodation of code-RL training.
 ## Table of Contents
 - [Updates](#updates)
 - [Features](#features)
+- [Cite](#cite)
 - [Contributing](#contributing)
 - [License](#license)
 
