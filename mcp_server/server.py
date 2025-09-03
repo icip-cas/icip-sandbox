@@ -1,7 +1,7 @@
 from fastmcp import FastMCP
-import argparse
 import requests
 import json
+import os
 
 SandboxURL = "http://0.0.0.0:8080/run_code"
 mcp = FastMCP(name="SandboxMCPServer")
@@ -54,9 +54,6 @@ def run_code(code: str = "",
         return f"Error running code: {e}"
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--url', type=str, default=SandboxURL, help='The URL of the sandbox service')
-    args = parser.parse_args()
-    SandboxURL = args.url
+    SandboxURL = os.getenv("SANDBOX_URL", SandboxURL)
 
     mcp.run(transport="http", port="8080")
