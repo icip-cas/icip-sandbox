@@ -1,6 +1,6 @@
 # ICIP Sandbox
 
-<p align="center"><img src="logo.svg" alt="ICIP Sandbox Logo" width="480"></p>
+<p align="center"><img src="logo.png" alt="ICIP Sandbox Logo" width="480"></p>
 
 ⚡ A scalable sandbox for better accommodation of code-RL training | 🛡️ Secure | 🌐 Multi-language | 🔥 Fast
 
