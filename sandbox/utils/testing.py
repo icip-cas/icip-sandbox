@@ -20,6 +20,7 @@ import re
 import os
 from datetime import datetime
 import tempfile
+import uuid
 
 import structlog
 from fastapi import HTTPException
@@ -128,6 +129,8 @@ async def check_stdio_test_cases_parallel(code: str,
                                           cases: List[GeneralStdioTest],
                                           config: TestConfig,
                                           lower_cmp=True) -> List[EvalTestCase]:
+    instance_id = uuid.uuid4().hex
+    instance_logger = logger.bind(instance_id=instance_id)
     result = []
     tasks: List[asyncio.Task[EvalTestCase]] = []
 
@@ -144,10 +147,10 @@ async def check_stdio_test_cases_parallel(code: str,
     total_timeout = config.extra.get("total_timeout", 300)
     deadline = asyncio.get_running_loop().time() + total_timeout
 
-    for task in tasks:
-        logger.info(f"check_function_call_test_cases_parallel, total_timeout: {total_timeout}, deadline: {deadline}, current_time: {asyncio.get_running_loop().time()}")
+    for task_idx, task in enumerate(tasks):
+        instance_logger.info(f"check_function_call_test_cases_parallel, total_timeout: {total_timeout}, task_idx: {task_idx}, deadline: {deadline}, current_time: {asyncio.get_running_loop().time()}")
         if asyncio.get_running_loop().time() > deadline:
-            logger.error("check_function_call_test_cases_parallel timeout", total_timeout=total_timeout)
+            instance_logger.error("check_function_call_test_cases_parallel timeout", total_timeout=total_timeout, task_idx=task_idx)
             for remaining_task in tasks:
                 if not remaining_task.done():
                     time_out_outcome = EvalTestCase(passed=False, exec_info=RunCodeResponse(status=RunStatus.SandboxError, message= "Total Timeout"), test_info=None)
@@ -432,6 +435,8 @@ async def check_function_call_test_cases_parallel(code: str,
         {'type': 'function_call', 'fn_name': 'sort_twisted37', 'input': [[9, 2, 4, 7, 3]], 'output': [[2, 7, 4, 3, 9]]}
     ]
     """
+    instance_id = uuid.uuid4().hex
+    instance_logger = logger.bind(instance_id=instance_id)
     result = []
     tasks: List[asyncio.Task[EvalTestCase]] = []
 
@@ -453,10 +458,10 @@ async def check_function_call_test_cases_parallel(code: str,
     total_timeout = config.extra.get("total_timeout", 300)
     deadline = asyncio.get_running_loop().time() + total_timeout
 
-    for task in tasks:
-        logger.info(f"check_function_call_test_cases_parallel, total_timeout: {total_timeout}, deadline: {deadline}, current_time: {asyncio.get_running_loop().time()}")
+    for task_idx, task in enumerate(tasks):
+        instance_logger.info(f"check_function_call_test_cases_parallel, total_timeout: {total_timeout}, task_idx: {task_idx}, deadline: {deadline}, current_time: {asyncio.get_running_loop().time()}")
         if asyncio.get_running_loop().time() > deadline:
-            logger.error("check_function_call_test_cases_parallel timeout", total_timeout=total_timeout)
+            instance_logger.error("check_function_call_test_cases_parallel timeout", total_timeout=total_timeout, task_idx=task_idx)
             for remaining_task in tasks:
                 if not remaining_task.done():
                     time_out_outcome = EvalTestCase(passed=False, exec_info=RunCodeResponse(status=RunStatus.SandboxError, message= "Total Timeout"), test_info=None)

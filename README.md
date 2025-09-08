@@ -1,6 +1,6 @@
 # ICIP Sandbox
 
-<p align="center"><img src="logo.png" alt="ICIP Sandbox Logo" width="100%"></p>
+<p align="center"><img src="logo.png" alt="ICIP Sandbox Logo" width="600"></p>
 
 ⚡ A scalable sandbox for better accommodation of code-RL training | 🛡️ Secure | 🌐 Multi-language | 🔥 Fast
 
@@ -163,6 +163,24 @@ docker run \
 
 ### 🔌 Calling the sandbox
 In additioon to the originally provided dataset-specific evaluation APIs, we also provide a unified evaluation API, which includes both stdio and function call evaluation modes on various languages.
+The description of API parameters are as follows:
+
+- completion: The code to be evaluated, in the form of markdown code block.
+- config: The configuration for the evaluation
+    - language: The language of the code.
+    - compile_timeout: The timeout for the code to be compiled. Default to 10.
+    - run_timeout: The timeout for the code to be run. Default to 10.
+    - provided_data: The data for the evaluation.
+        - test_cases: The test cases for the evaluation.
+            - type: The type of the test cases, either `stdin_stdout` or `function_call`.
+            - input: The input for the test cases. For `stdin_stdout`, the format is `["input_1", "input_2", ..., "input_n"]`; for `function_call`, the format is `[[input_1_1, input_1_2, ..., input_1_k], [input_2_1, input_2_2, ..., input_2_k], ..., [input_n_1, input_n_2, ..., input_n_k]]`.
+            - output: The output for the test cases. For `stdin_stdout`, the format is `["output_1", "output_2", ..., "output_n"]`; for `function_call`, the format is `[[output_1], [output_2], .., [output_n]]`.
+            - fn_name: The name of the function to be evaluated.
+            - json_input: Whether the input needs to be [split by '\n' and loaded as json](https://github.com/LiveCodeBench/LiveCodeBench/blob/28fef95ea8c9f7a547c8329f2cd3d32b92c1fa24/lcb_runner/evaluation/testing_util.py#L246). Default to False.
+- extra: The extra configuration for the evaluation.
+    - run_all_cases: Whether to run all test cases if one test case failed.
+    - total_timeout: After which the unit tests will not be executed, while the already running unit tests will continue to run until `run_timeout` is reached. Default to 300.
+
 Here is an example of how to use the `common_evaluate_batch` API for testing a+b problem with standard input/output format.
 ```python
 # stdio evaluate
@@ -263,10 +281,11 @@ payload = {
         "language": "python",
         "provided_data": { 
             "test_cases": 
-                {"type": "function_call", "input": [[1, 2], [3, 4]], "output": [3, 7], "fn_name": "add"},            
+                {"type": "function_call", "input": [[1, 2], [3, 4]], "output": [[3], [7]], "fn_name": "add", "json_input": False},            
         },
         "extra": {
-            "run_all_cases": True
+            "run_all_cases": True,
+            "total_timeout": 1
         }
     }
 }
@@ -394,7 +413,7 @@ Then, add the following to your MCP client:
 ```bibtex
 @software{icip_cas_sandbox_2025,
   author = {},
-  title = {{icip-sandbox}},
+  title = {icip-sandbox},
   url = {https://github.com/icip-cas/icip-sandbox},
   year = {2025}
 }
