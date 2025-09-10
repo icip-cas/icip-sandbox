@@ -195,12 +195,12 @@ def convert_batch_data_format(data: Dict[str, Any], data_format='stdin_stdout') 
     """
     test_cases = data['test_cases']
     test = []
-    dataset = test_cases.get('dataset', None)
+    json_input = test_cases.get('json_input', False)
     for i in range(len(test_cases['input'])):
         the_input = test_cases['input'][i]
         the_output = test_cases['output'][i]
-        if isinstance(the_input, str) and data_format == 'function_call' and dataset == 'LiveCodeBench':
-            # For LiveCodeBench data, if the input is a string, we need to convert it to a list
+        if isinstance(the_input, str) and data_format == 'function_call' and json_input is True:
+            # For json_input data, if the input is a string, we need to load it as json and convert it to a list
             try:
                 the_input = [json.loads(line) for line in the_input.split("\n")]
                 the_output = [json.loads(the_output)]
@@ -213,9 +213,30 @@ def convert_batch_data_format(data: Dict[str, Any], data_format='stdin_stdout') 
             "input": the_input,
             "output": the_output,
         })
-    logging.info(f"Test: {test}, format: {data_format}, dataset: {dataset}")
     return {'test_cases': test}
 
+
+dataset_map = {
+    'python': 'humaneval_python',
+    'cpp': 'multiple_cpp',
+    'typescript': 'multiple_typescript',
+    'bash': 'multiple_bash',
+    'csharp': 'multiple_csharp',
+    'go': 'multiple_go',
+    'java': 'multiple_java',
+    'lua': 'multiple_lua',
+    'javascript': 'multiple_javascript',
+    'php': 'multiple_php',
+    'perl': 'multiple_perl',
+    'racket': 'multiple_racket',
+    'r': 'multiple_r',
+    'rust': 'multiple_rust',
+    'scala': 'multiple_scala',
+    'swift': 'multiple_swift',
+    'ruby': 'multiple_ruby',
+    'd': 'multiple_d',
+    'julia': 'multiple_julia',
+}
 
 @oj_router.post("/common_evaluate_batch", description='Submit a single problem with a batch of test cases and evaluate in the form of stdio common judge or function eval', tags=['datasets'])
 async def common_evaluate_batch(request: SubmitRequest) -> EvalResult:
@@ -232,22 +253,31 @@ async def common_evaluate_batch(request: SubmitRequest) -> EvalResult:
         data_format = case['type']
     elif 'fn_name' in case and case['fn_name'] is not None:
         data_format = "function_call"
-    
-    request.config.provided_data = convert_batch_data_format(request.config.provided_data, data_format)
-    if data_format == "stdin_stdout":
-        request.config.provided_data = convert_stdio_data_format(request.config.provided_data)
-        row = await get_row_by_id_in_table(request, table_name=None, columns=['test'])
-        cases = [GeneralStdioTest(**case) for case in ensure_json(row, 'test')]
-        outcomes = await check_stdio_test_cases_parallel(code, cases, request.config)
-    # function call eval
+    if data_format == "assert":
+        dataset = dataset_map.get(request.config.language, 'multiple_python')
+        request.dataset = dataset
+        logging.info(f"Using dataset {dataset} for language {request.config.language}")
+        dataset = get_dataset_cls(dataset, request.config)
+        for key, value in request.config.provided_data['test_cases'].items():
+            request.config.provided_data[key] = value
+        request.config.extra['is_freeform'] = True
+        result = await dataset.evaluate_single(request)
     else:
-        cases = request.config.provided_data['test_cases']
-        outcomes = await check_function_call_test_cases_parallel(code, cases, request.config)
-    
-    result = EvalResult(id=request.id,
-                            accepted=all([o.passed for o in outcomes]),
-                            extracted_code=code,
-                            tests=outcomes)
+        request.config.provided_data = convert_batch_data_format(request.config.provided_data, data_format)
+        if data_format == "stdin_stdout":
+            request.config.provided_data = convert_stdio_data_format(request.config.provided_data)
+            row = await get_row_by_id_in_table(request, table_name=None, columns=['test'])
+            cases = [GeneralStdioTest(**case) for case in ensure_json(row, 'test')]
+            outcomes = await check_stdio_test_cases_parallel(code, cases, request.config)
+        # function call eval
+        else:
+            cases = request.config.provided_data['test_cases']
+            outcomes = await check_function_call_test_cases_parallel(code, cases, request.config)
+        
+        result = EvalResult(id=request.id,
+                                accepted=all([o.passed for o in outcomes]),
+                                extracted_code=code,
+                                tests=outcomes)
     
     # if os.getenv('SAVE_BAD_CASES') == 'true':
     # if all([o.exec_info.status == 'SandboxError' for o in outcomes]):

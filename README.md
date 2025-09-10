@@ -359,6 +359,201 @@ result = response.json()
 
 </details>
 
+
+An example of assert evaluation from MultiPL-E cpp:
+```python
+# function evaluate batch
+payload = {
+    "completion": "```cpp\n#include <bits/stdc++.h>\nusing namespace std;\n\n// Write a cpp function to identify non-prime numbers.\nbool is_not_prime(long n) {\n    // Handle corner cases\n    if (n <= 1) return true;\n    if (n <= 3) return false;\n\n    // This is checked so that we can skip \n    // middle five numbers in below loop\n    if (n % 2 == 0 || n % 3 == 0) return true;\n\n    for (long i = 5; i * i <= n; i += 6)\n        if (n % i == 0 || n % (i + 2) == 0)\n            return true;\n\n    return false;\n}",
+    "config": {
+        "language": "cpp",
+        "provided_data": { 
+            "test_cases": {
+                "type": "assert", 
+                "tests": "}\nint main() {\n    auto candidate = is_not_prime;\n    assert(candidate((2)) == (false));\n    assert(candidate((10)) == (true));\n    assert(candidate((35)) == (true));\n    assert(candidate((37)) == (false));\n}\n", 
+                "stop_tokens": ["\n}"]},            
+        },
+        "extra": {
+            "run_all_cases": True,
+            "total_timeout": 1
+        }
+    }
+}
+
+response = requests.post('http://0.0.0.0:8080/common_evaluate_batch', json=payload)
+result = response.json()
+```
+
+<details>
+<summary>Response</summary>
+
+```json
+{
+    "id": 0,
+    "accepted": true,
+    "extracted_code": "#include <bits/stdc++.h>\nusing namespace std;\n\n// Write a cpp function to identify non-prime numbers.\nbool is_not_prime(long n) {\n    // Handle corner cases\n    if (n <= 1) return true;\n    if (n <= 3) return false;\n\n    // This is checked so that we can skip \n    // middle five numbers in below loop\n    if (n % 2 == 0 || n % 3 == 0) return true;\n\n    for (long i = 5; i * i <= n; i += 6)\n        if (n % i == 0 || n % (i + 2) == 0)\n            return true;\n\n    return false;",
+    "full_code": "using namespace std;\n#include<optional>\n#include<cassert>\n#include<stdlib.h>\n#include<algorithm>\n#include<cmath>\n#include<math.h>\n#include<numeric>\n#include<stdio.h>\n#include<vector>\n#include<set>\n#include<map>\n#include<queue>\n#include<stack>\n#include<list>\n#include<deque>\n#include<boost/any.hpp>\n#include<string>\n#include<climits>\n#include<cstring>\n#include<iostream>\n#include<sstream>\n#include<fstream>\n#include <bits/stdc++.h>\nusing namespace std;\n\n// Write a cpp function to identify non-prime numbers.\nbool is_not_prime(long n) {\n    // Handle corner cases\n    if (n <= 1) return true;\n    if (n <= 3) return false;\n\n    // This is checked so that we can skip \n    // middle five numbers in below loop\n    if (n % 2 == 0 || n % 3 == 0) return true;\n\n    for (long i = 5; i * i <= n; i += 6)\n        if (n % i == 0 || n % (i + 2) == 0)\n            return true;\n\n    return false;\n}\nint main() {\n    auto candidate = is_not_prime;\n    assert(candidate((2)) == (false));\n    assert(candidate((10)) == (true));\n    assert(candidate((35)) == (true));\n    assert(candidate((37)) == (false));\n}\n",
+    "test_code": null,
+    "tests": [
+        {
+            "passed": true,
+            "exec_info": {
+                "status": "Success",
+                "message": "",
+                "compile_result": {
+                    "status": "Finished",
+                    "execution_time": 1.4092826843261719,
+                    "return_code": 0,
+                    "stdout": "",
+                    "stderr": ""
+                },
+                "run_result": {
+                    "status": "Finished",
+                    "execution_time": 0.0036695003509521484,
+                    "return_code": 0,
+                    "stdout": "",
+                    "stderr": ""
+                },
+                "executor_pod_name": null,
+                "files": {}
+            },
+            "test_info": null
+        }
+    ],
+    "extracted_type": null,
+    "extra": null
+}
+```
+
+</details>
+
+An example of assert evaluation from MultiPL-E cpp:
+```python
+# function evaluate batch
+payload = {
+    "completion": "```cpp\n#include <bits/stdc++.h>\nusing namespace std;\n\n// Write a cpp function to identify non-prime numbers.\nbool is_not_prime(long n) {\n    // Handle corner cases\n    if (n <= 1) return true;\n    if (n <= 3) return false;\n\n    // This is checked so that we can skip \n    // middle five numbers in below loop\n    if (n % 2 == 0 || n % 3 == 0) return true;\n\n    for (long i = 5; i * i <= n; i += 6)\n        if (n % i == 0 || n % (i + 2) == 0)\n            return true;\n\n    return false;\n}",
+    "config": {
+        "language": "cpp",
+        "provided_data": { 
+            "test_cases": {
+                "type": "assert", 
+                "tests": "}\nint main() {\n    auto candidate = is_not_prime;\n    assert(candidate((2)) == (false));\n    assert(candidate((10)) == (true));\n    assert(candidate((35)) == (true));\n    assert(candidate((37)) == (false));\n}\n", 
+                "stop_tokens": ["\n}"]},            
+        },
+        "extra": {
+            "run_all_cases": True,
+            "total_timeout": 1
+        }
+    }
+}
+
+response = requests.post('http://0.0.0.0:8080/common_evaluate_batch', json=payload)
+result = response.json()
+```
+
+<details>
+<summary>Response</summary>
+
+```json
+{
+    "id": 0,
+    "accepted": true,
+    "extracted_code": "#include <bits/stdc++.h>\nusing namespace std;\n\n// Write a cpp function to identify non-prime numbers.\nbool is_not_prime(long n) {\n    // Handle corner cases\n    if (n <= 1) return true;\n    if (n <= 3) return false;\n\n    // This is checked so that we can skip \n    // middle five numbers in below loop\n    if (n % 2 == 0 || n % 3 == 0) return true;\n\n    for (long i = 5; i * i <= n; i += 6)\n        if (n % i == 0 || n % (i + 2) == 0)\n            return true;\n\n    return false;",
+    "full_code": "using namespace std;\n#include<optional>\n#include<cassert>\n#include<stdlib.h>\n#include<algorithm>\n#include<cmath>\n#include<math.h>\n#include<numeric>\n#include<stdio.h>\n#include<vector>\n#include<set>\n#include<map>\n#include<queue>\n#include<stack>\n#include<list>\n#include<deque>\n#include<boost/any.hpp>\n#include<string>\n#include<climits>\n#include<cstring>\n#include<iostream>\n#include<sstream>\n#include<fstream>\n#include <bits/stdc++.h>\nusing namespace std;\n\n// Write a cpp function to identify non-prime numbers.\nbool is_not_prime(long n) {\n    // Handle corner cases\n    if (n <= 1) return true;\n    if (n <= 3) return false;\n\n    // This is checked so that we can skip \n    // middle five numbers in below loop\n    if (n % 2 == 0 || n % 3 == 0) return true;\n\n    for (long i = 5; i * i <= n; i += 6)\n        if (n % i == 0 || n % (i + 2) == 0)\n            return true;\n\n    return false;\n}\nint main() {\n    auto candidate = is_not_prime;\n    assert(candidate((2)) == (false));\n    assert(candidate((10)) == (true));\n    assert(candidate((35)) == (true));\n    assert(candidate((37)) == (false));\n}\n",
+    "test_code": null,
+    "tests": [
+        {
+            "passed": true,
+            "exec_info": {
+                "status": "Success",
+                "message": "",
+                "compile_result": {
+                    "status": "Finished",
+                    "execution_time": 1.4092826843261719,
+                    "return_code": 0,
+                    "stdout": "",
+                    "stderr": ""
+                },
+                "run_result": {
+                    "status": "Finished",
+                    "execution_time": 0.0036695003509521484,
+                    "return_code": 0,
+                    "stdout": "",
+                    "stderr": ""
+                },
+                "executor_pod_name": null,
+                "files": {}
+            },
+            "test_info": null
+        }
+    ],
+    "extracted_type": null,
+    "extra": null
+}
+```
+
+</details>
+
+An example of assert evaluation from HumanEval:
+```python
+# function evaluate batch
+payload = {
+    "completion": "```python\ndef is_prime(n):\n    \"\"\"Return true if a given number is prime, and false otherwise.\n    >>> is_prime(6)\n    False\n    >>> is_prime(101)\n    True\n    >>> is_prime(11)\n    True\n    >>> is_prime(13441)\n    True\n    >>> is_prime(61)\n    True\n    >>> is_prime(4)\n    False\n    >>> is_prime(1)\n    False\n    \"\"\"\n    if n <= 1:\n        return False\n    if n == 2:\n        return True\n    if n % 2 == 0:\n        return False\n    for i in range(3, int(n**0.5) + 1, 2):\n        if n % i == 0:\n            return False\n    return True\n```",
+    "config": {
+        "language": "python",
+        "provided_data": { 
+            "test_cases": {
+                "type": "assert", 
+                "test":  "\n\nMETADATA = {}\n\n\ndef check(candidate):\n    assert candidate(6) == False\n    assert candidate(101) == True\n    assert candidate(11) == True\n    assert candidate(13441) == True\n    assert candidate(61) == True\n    assert candidate(4) == False\n    assert candidate(1) == False\n    assert candidate(5) == True\n    assert candidate(11) == True\n    assert candidate(17) == True\n    assert candidate(5 * 17) == False\n    assert candidate(11 * 7) == False\n    assert candidate(13441 * 19) == False\n\n", 
+                "entry_point": "is_prime",
+            },            
+        },
+    }
+}
+
+
+response = requests.post('http://0.0.0.0:8080/common_evaluate_batch', json=payload)
+result = response.json()
+```
+
+<details>
+<summary>Response</summary>
+
+```json
+{
+    "id": 0,
+    "accepted": true,
+    "extracted_code": "def is_prime(n):\n    \"\"\"Return true if a given number is prime, and false otherwise.\n    >>> is_prime(6)\n    False\n    >>> is_prime(101)\n    True\n    >>> is_prime(11)\n    True\n    >>> is_prime(13441)\n    True\n    >>> is_prime(61)\n    True\n    >>> is_prime(4)\n    False\n    >>> is_prime(1)\n    False\n    \"\"\"\n    if n <= 1:\n        return False\n    if n == 2:\n        return True\n    if n % 2 == 0:\n        return False\n    for i in range(3, int(n**0.5) + 1, 2):\n        if n % i == 0:\n            return False\n    return True",
+    "full_code": "import math\nimport re\nimport sys\nimport copy\nimport datetime\nimport itertools\nimport collections\nimport heapq\nimport statistics\nimport functools\nimport hashlib\nimport numpy\nimport numpy as np\nimport string\nfrom typing import *\nfrom collections import *\ndef is_prime(n):\n    \"\"\"Return true if a given number is prime, and false otherwise.\n    >>> is_prime(6)\n    False\n    >>> is_prime(101)\n    True\n    >>> is_prime(11)\n    True\n    >>> is_prime(13441)\n    True\n    >>> is_prime(61)\n    True\n    >>> is_prime(4)\n    False\n    >>> is_prime(1)\n    False\n    \"\"\"\n    if n <= 1:\n        return False\n    if n == 2:\n        return True\n    if n % 2 == 0:\n        return False\n    for i in range(3, int(n**0.5) + 1, 2):\n        if n % i == 0:\n            return False\n    return True\n\n\nMETADATA = {}\n\n\ndef check(candidate):\n    assert candidate(6) == False\n    assert candidate(101) == True\n    assert candidate(11) == True\n    assert candidate(13441) == True\n    assert candidate(61) == True\n    assert candidate(4) == False\n    assert candidate(1) == False\n    assert candidate(5) == True\n    assert candidate(11) == True\n    assert candidate(17) == True\n    assert candidate(5 * 17) == False\n    assert candidate(11 * 7) == False\n    assert candidate(13441 * 19) == False\n\n\ncheck(is_prime)",
+    "test_code": null,
+    "tests": [
+        {
+            "passed": true,
+            "exec_info": {
+                "status": "Success",
+                "message": "",
+                "compile_result": null,
+                "run_result": {
+                    "status": "Finished",
+                    "execution_time": 0.12065744400024414,
+                    "return_code": 0,
+                    "stdout": "",
+                    "stderr": ""
+                },
+                "executor_pod_name": null,
+                "files": {}
+            },
+            "test_info": null
+        }
+    ],
+    "extracted_type": null,
+    "extra": null
+}
+```
+
+</details>
+
+
 ### 🛠️ Dev & Test
 
 Refer to installation section for the setup of development environment.
