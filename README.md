@@ -13,11 +13,34 @@
 - [📄 License](#license)
 
 ## ✨ Updates
-- Adapted to RL training frameworks including [verl](https://github.com/volcengine/verl?tab=readme-ov-file), and Ascend NPU environment with [verl](https://github.com/volcengine/verl?tab=readme-ov-file) and [MindSpeed-RL](https://github.com/Ascend/MindSpeed-RL)
-- Added support for unified evaluation interface for code generation tasks
-- Improved sandbox setup parameters for better controllability
-- Added support for automatic distributed deployment
-- Added support for sandbox exception logging
+
+### RL Training
+- **Full compatibility with mainstream RL frameworks**
+  - Support for NVIDIA environment with [verl](https://github.com/volcengine/verl?tab=readme-ov-file), and Ascend NPU environment with [verl](https://github.com/volcengine/verl?tab=readme-ov-file) and [MindSpeed-RL](https://github.com/Ascend/MindSpeed-RL)
+  - Support for mixed Docker environment with RL training and sandbox calls, enabling one-click deployment and RL training
+- **Efficiency optimization**
+  - Distributed deployment: Support for large-scale multi-machine distributed sandbox deployment and load-balanced requests
+  - Full parallelization: Support for unit test parallelization and instance-level parallelization
+- **Unified interface**: Support for common code RL training data unified request interface
+  - Stdin-out
+  - Function call
+  - Assert (MultiPL-E format)
+- **Better monitoring and management**
+  - Error monitoring
+  - Nginx logs
+  - Auto restart
+
+### Code LLM Evaluation
+- **Simple-to-use evaluation for common code benchmarks**
+  - Support for high-efficiency distributed inference
+  - Support for long reasoning models
+  - Support for multiple sampling with averaging
+  - One-click evaluation of multiple models and benchmarks by simply modifying configuration files
+
+### Sandbox Usability
+- Parameter configuration
+- MCP support
+- Comprehensive test scripts
 
 ## 🎯 Features
 
@@ -535,6 +558,92 @@ Then, add the following to your MCP client:
         }
     }
 }
+```
+
+## 📚 Logging
+### ⚠️ Error Programs Recording
+Enable by setting `SAVE_BAD_CASES` to `true` in the environment variables, and disabled by default.
+```bash
+export SAVE_BAD_CASES=true
+make run-online
+```
+If the unit test running status is `SandboxError`, the result would be written to `output/{datetime}/xxx.json`.
+
+<details>
+<summary>Example</summary>
+```json
+{
+  "id": 0,
+  "accepted": false,
+  "extracted_code": "__author__ = 'Admin'\n\ndef f(n):\n\treturn max(n[0], n[1])\nt = True\n(x1, y1, x2, y2, x3, y3) = map(int, input().split())\nm = [x1, y1, x2, y2, x3, y3]\nm1 = [[x1, y1, 'A'], [x2, y2, 'B'], [x3, y3, 'C']]\nm1.sort(key=f)\nmaxi = max(m1[-1][0], m1[-1][1])\nmini = min(m1[-1][0], m1[-1][1])\nmaxj = max(m1[-2][1], m1[-2][0])\nminj = min(m1[-2][1], m1[-2][0])\nmaxk = max(m1[0][1], m1[0][0])\nmink = min(m1[0][1], m1[0][0])\ns = m1[-1][2]\ns1 = m1[-2][2]\ns2 = m1[0][2]\nmatr = [[0] * maxi for i in range(maxi)]\nfor i in range(mini):\n\tfor j in range(maxi):\n\t\tmatr[i][j] = s\nif maxj == maxi and mini + minj <= maxi:\n\tfor i in range(mini, minj + mini):\n\t\tfor j in range(maxj):\n\t\t\tmatr[i][j] = s1\n\tif maxk == maxi and mini + minj + mink == maxi:\n\t\tfor i in range(minj + mini, mink + minj + mini):\n\t\t\tfor j in range(maxk):\n\t\t\t\tmatr[i][j] = s2\n\telse:\n\t\tt = False\nelif maxj == maxi - mini:\n\tfor i in range(mini, mini + maxj):\n\t\tfor j in range(minj):\n\t\t\tmatr[i][j] = s1\n\tif maxk == maxj and mink == maxi - minj:\n\t\tfor i in range(mini, mini + maxk):\n\t\t\tfor j in range(minj, minj + mink):\n\t\t\t\tmatr[i][j] = s2\n\telse:\n\t\tt = False\nelif minj == maxi - mini:\n\tfor i in range(mini, mini + minj):\n\t\tfor j in range(maxj):\n\t\t\tmatr[i][j] = s1\n\tif mink == minj and maxk == maxi - maxj:\n\t\tfor i in range(mini, mini + mink):\n\t\t\tfor j in range(maxj, maxj + maxk):\n\t\t\t\tmatr[i][j] = s2\n\telif maxk == minj and mink == maxi - maxj:\n\t\tfor i in range(mini, mini + maxk):\n\t\t\tfor j in range(maxj, maxj + mink):\n\t\t\t\tmatr[i][j] = s2\n\telse:\n\t\tt = False\nelse:\n\tt = False\nif t == True:\n\tprint(maxi)\n\tfor i in range(maxi):\n\t\tprint(*matr[i], sep='')\nelse:\n\tprint(-1)",
+  "full_code": null,
+  "test_code": null,
+  "tests": [
+    {
+      "passed": false,
+      "exec_info": {
+        "status": "Success",
+        "message": "",
+        "compile_result": null,
+        "run_result": {
+          "status": "Finished",
+          "execution_time": 0.8049399852752686,
+          "return_code": 0,
+          "stdout": "5\nCCCCC\nCCCCC\nBBBBB\nBBBBB\nAAAAA\n",
+          "stderr": ""
+        },
+        "executor_pod_name": null,
+        "files": {}
+      },
+      "test_info": {
+        "input": {
+          "stdin": "5 1 2 5 5 2\n"
+        },
+        "output": {
+          "stdout": "5\nAAAAA\nBBBBB\nBBBBB\nCCCCC\nCCCCC\n"
+        }
+      }
+    },
+    {
+      "passed": false,
+      "exec_info": {
+        "status": "SandboxError",
+        "message": "Total Timeout",
+        "compile_result": null,
+        "run_result": null,
+        "executor_pod_name": null,
+        "files": {}
+      },
+      "test_info": null
+    }
+  ],
+  "extracted_type": null,
+  "extra": null
+}
+```
+</details>
+
+### 🔗  Nignx Connection Logging
+Running the command below to test the availability of the upstream servers and count the connections to each server.
+```bash
+bash deploy/test_available_server.sh
+```
+
+The output will be like this:
+```bash
+Active connections per upstream server:
+=========== Active connections ============
+Address [IP1]:[PORT1]: 1 connections
+Address [IP2]:[PORT2]: 4 connections
+Address [IP3]:[PORT3]: 3 connections
+Address [IP4]:[PORT4]: 2 connections
+===========================================
+========= Active server addresses =========
+Address [IP1]:[PORT1] is working
+Address [IP2]:[PORT2] is working
+Address [IP3]:[PORT3] is working
+Address [IP4]:[PORT4] is working
+===========================================
 ```
 
 ## 📝 Citation
