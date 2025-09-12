@@ -148,9 +148,9 @@ async def check_stdio_test_cases_parallel(code: str,
     deadline = asyncio.get_running_loop().time() + total_timeout
 
     for task_idx, task in enumerate(tasks):
-        instance_logger.info(f"check_function_call_test_cases_parallel, total_timeout: {total_timeout}, task_idx: {task_idx}, deadline: {deadline}, current_time: {asyncio.get_running_loop().time()}")
+        instance_logger.info(f"check_stdio_test_cases_parallel, total_timeout: {total_timeout}, task_idx: {task_idx}, deadline: {deadline}, current_time: {asyncio.get_running_loop().time()}")
         if asyncio.get_running_loop().time() > deadline:
-            instance_logger.error("check_function_call_test_cases_parallel timeout", total_timeout=total_timeout, task_idx=task_idx)
+            instance_logger.error("check_stdio_test_cases_parallel timeout", total_timeout=total_timeout, task_idx=task_idx)
             for remaining_task in tasks:
                 if not remaining_task.done():
                     time_out_outcome = EvalTestCase(passed=False, exec_info=RunCodeResponse(status=RunStatus.SandboxError, message= "Total Timeout"), test_info=None)
@@ -172,6 +172,7 @@ async def check_stdio_test_cases_parallel(code: str,
     return result
 
 def concat_function_assertion(function, fn_name, input, output, language):
+    original_output = output
     if isinstance(output, list) and len(output) == 1:
         output = output[0]
     if type(output) is str:
@@ -190,7 +191,7 @@ def concat_function_assertion(function, fn_name, input, output, language):
             full_code = f'''
 {function}
 res = {fn_name}(*{input})
-assert res == {output}
+assert res == {original_output}[0]
 '''
         else:
             full_code = "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(6*10**5)\n"
@@ -198,7 +199,7 @@ assert res == {output}
 {function}
 sol = Solution()
 res = sol.{fn_name}(*{input})
-assert res == {output}
+assert res == {original_output}[0]
 '''
     elif language == "racket":
         input_str_racket = ' '.join([f'"{i}"' if type(i) is str else str(i) for i in input])
