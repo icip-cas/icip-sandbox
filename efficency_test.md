@@ -7,7 +7,7 @@ We evaluated the performance of our sandbox API against prime_code local evaluat
 - **Sample Size**: 2,048 Python problem instances with reference code
 
 ### Hardware Environment
-- **CPU**: Intel® Xeon® Platinum 8378A @ 3.00GHz
+- **CPU**: Intel Xeon Platinum 8378A @ 3.00GHz
 - **Cores**: 128 physical cores
 - **Memory**: 1 TB
 
