@@ -18,7 +18,7 @@
 - **Full compatibility with mainstream RL frameworks**
   - Support for NVIDIA environment with [verl](https://github.com/volcengine/verl?tab=readme-ov-file), and Ascend NPU environment with [verl](https://github.com/volcengine/verl?tab=readme-ov-file) and [MindSpeed-RL](https://github.com/Ascend/MindSpeed-RL)
   - Support for mixed Docker environment with RL training and sandbox calls, enabling [one-click deployment and RL training](deploy/start_verl_sandbox.sh)
-- **[Efficiency optimization](efficency_test.md)**
+- **Efficiency optimization ([report](efficency_test.md) )**
   - Distributed deployment: Support for large-scale multi-machine distributed sandbox deployment and load-balanced requests
   - Full parallelization: Support for unit test parallelization and instance-level parallelization
 - **Unified interface**: Support for common code RL training data unified request interface
