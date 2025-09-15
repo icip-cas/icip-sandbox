@@ -1,7 +1,6 @@
       
 #!/bin/bash
 export VLLM_ATTENTION_BACKEND=XFORMERS
-# 必须放在最前面
 
 project_path=~/verl
 sandbox_path=~/icip-sandbox
