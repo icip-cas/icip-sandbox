@@ -649,7 +649,6 @@ Address [IP4]:[PORT4] is working
 ## 📝 Citation
 ```bibtex
 @software{icip_cas_sandbox_2025,
-  author = {},
   title = {icip-sandbox},
   url = {https://github.com/icip-cas/icip-sandbox},
   year = {2025}
