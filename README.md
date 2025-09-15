@@ -17,7 +17,7 @@
 ### RL Training
 - **Full compatibility with mainstream RL frameworks**
   - Support for NVIDIA environment with [verl](https://github.com/volcengine/verl?tab=readme-ov-file), and Ascend NPU environment with [verl](https://github.com/volcengine/verl?tab=readme-ov-file) and [MindSpeed-RL](https://github.com/Ascend/MindSpeed-RL)
-  - Support for mixed Docker environment with RL training and sandbox calls, enabling one-click deployment and RL training
+  - Support for mixed Docker environment with RL training and sandbox calls, enabling [one-click deployment and RL training](deploy/start_verl_sandbox.sh)
 - **[Efficiency optimization](efficency_test.md)**
   - Distributed deployment: Support for large-scale multi-machine distributed sandbox deployment and load-balanced requests
   - Full parallelization: Support for unit test parallelization and instance-level parallelization
@@ -518,6 +518,12 @@ Run all unit tests:
 
 ```bash
 make test
+```
+
+Run the test of `common_evaluate_batch` API:
+```bash
+export URL="http://0.0.0.0:8080"
+make test-case CASE=test_sandbox_common_evaluate
 ```
 
 Run a specific unit test (allows you to see stdout):
