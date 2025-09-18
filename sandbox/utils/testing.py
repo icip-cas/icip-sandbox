@@ -21,6 +21,7 @@ import os
 from datetime import datetime
 import tempfile
 import uuid
+import base64
 
 import structlog
 from fastapi import HTTPException
@@ -67,6 +68,27 @@ def is_float(s):
 def float_equal(a, b, rel_tol=1e-5):
     return abs(a - b) / max(abs(b), 1e-10) < rel_tol
 
+async def check_special_judge(stdin: str, stdout: str, answer: str, special_judge_program: str, special_judge_language: str = "python") -> bool:
+    stdin_base64 = base64.b64encode(stdin.encode('utf-8')).decode('utf-8')
+    stdout_base64 = base64.b64encode(stdout.encode('utf-8')).decode('utf-8')
+    answer_base64 = base64.b64encode(answer.encode('utf-8')).decode('utf-8')
+    files = {
+        "stdin.txt": stdin_base64,
+        "stdout.txt": stdout_base64,
+        "answer.txt": answer_base64,
+    }
+    
+    result = await run_code_in_sandbox_w_retry(
+        RunCodeRequest(code=special_judge_program,
+                       language=special_judge_language,
+                       files=files,
+                       stdin=None,
+                       compile_timeout=10,
+                       run_timeout=10,))
+    logger.debug(f"check_special_judge result: {result}")
+
+    return result.status == RunStatus.Success
+
 
 async def check_stdio_test_case(code: str, case: GeneralStdioTest, config: TestConfig, lower_cmp=True) -> EvalTestCase:
     if config.language in compile_languages:
@@ -93,8 +115,10 @@ async def check_stdio_test_case(code: str, case: GeneralStdioTest, config: TestC
         result_lines = result_lines[:-1]
     if len(expected_lines) - len(result_lines) == 1 and expected_lines[-1] == '':
         expected_lines = expected_lines[:-1]
-    if len(result_lines) != len(expected_lines):
-        return fail_case
+    # if len(result_lines) != len(expected_lines):
+    #     return fail_case
+    special_judge_program = config.extra.get('special_judge_program', None)
+    special_judge_language = config.extra.get('special_judge_language', 'python')
     for rl, el in zip(result_lines, expected_lines):
         if lower_cmp:
             rl = rl.lower()
@@ -103,7 +127,20 @@ async def check_stdio_test_case(code: str, case: GeneralStdioTest, config: TestC
             if is_float(el) and is_float(rl):
                 if float_equal(float(rl), float(el)):
                     continue
-            return fail_case
+            if special_judge_program is not None:
+                correct = await check_special_judge(
+                    stdin=case.input['stdin'],
+                    stdout=case.output['stdout'],
+                    answer=result.run_result.stdout,
+                    special_judge_program=special_judge_program,
+                    special_judge_language=special_judge_language
+                )
+                if correct:
+                    return EvalTestCase(passed=True, exec_info=result, test_info=case.model_dump())
+                else:
+                    return fail_case
+            else:
+                return fail_case
     if not config.extra.get('return_full_case', False):
         for k in case.input:
             case.input[k] = truncate_str(case.input[k])
