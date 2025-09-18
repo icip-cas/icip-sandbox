@@ -87,7 +87,7 @@ async def check_special_judge(stdin: str, stdout: str, answer: str, special_judg
                        run_timeout=10,))
     logger.debug(f"check_special_judge result: {result}")
 
-    return result.status == RunStatus.Success
+    return result.status == RunStatus.Success and result.run_result.return_code == 0
 
 
 async def check_stdio_test_case(code: str, case: GeneralStdioTest, config: TestConfig, lower_cmp=True) -> EvalTestCase:

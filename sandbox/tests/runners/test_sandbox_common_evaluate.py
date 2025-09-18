@@ -27,6 +27,29 @@ def test_special_judge():
     print(json.dumps(result, indent=2))
     assert result['accepted'] == True
 
+def test_special_judge_2():
+    payload = {
+        "completion": """```python\nc = int(input())\nprint(c-1, c)\n```""",
+        "config": {
+            "language": "python",
+            "run_timeout": 10,
+            "provided_data": { 
+                "test_cases": 
+                    {"type": "stdin_stdout", "output": ["1 2", "3 4"], "input": ["3", "7"], "fn_name": None},            
+            },
+            "extra": {
+                "run_all_cases": True,
+                "special_judge_program": '''import sys\n\ndef read_file(filepath):\n    """Read file content and return lines."""\n    with open(filepath, 'r') as f:\n        return f.read().strip().split('\\n')\n\n\ndef validate_solution(stdin_path, stdout_path, answer_path):\n    """Validate the participant's solution."""\n    \n    stdin_lines = read_file(stdin_path)\n    stdout_lines = read_file(stdout_path)\n    participant_output = read_file(answer_path)\n\n    a, b = map(int, participant_output[0].split())\n    c = a + b\n    expected_output = int(stdin_lines[0])\n    return c == expected_output\n\n    \nstdin_path = "stdin.txt"\nstdout_path = "stdout.txt"\nanswer_path = "answer.txt"\n\nis_valid = validate_solution(stdin_path, stdout_path, answer_path)\n\nif is_valid:\n    sys.exit(0)\nelse:\n    sys.exit(1)''',
+                "special_judge_language": "python",
+            }
+        }
+    }
+
+    response = requests.post(f'{URL}/common_evaluate_batch', json=payload)
+    result = response.json()
+    print(json.dumps(result, indent=2))
+    assert result['accepted'] == False
+
 def test_cpp_assert():
     payload = {
         "completion": "```cpp\n#include <bits/stdc++.h>\nusing namespace std;\n\n// Write a cpp function to identify non-prime numbers.\nbool is_not_prime(long n) {\n    // Handle corner cases\n    if (n <= 1) return true;\n    if (n <= 3) return false;\n\n    // This is checked so that we can skip \n    // middle five numbers in below loop\n    if (n % 2 == 0 || n % 3 == 0) return true;\n\n    for (long i = 5; i * i <= n; i += 6)\n        if (n % i == 0 || n % (i + 2) == 0)\n            return true;\n\n    return false;\n}",
