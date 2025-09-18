@@ -22,7 +22,7 @@
   - Distributed deployment: Support for large-scale multi-machine distributed sandbox deployment and load-balanced requests
   - Full parallelization: Support for unit test parallelization and instance-level parallelization
 - **Unified interface**: Support for common code RL training data unified request interface
-  - Stdin-out
+  - Stdin-out (including special judge)
   - Function call
   - Assert (MultiPL-E format)
 - **Better monitoring and management**
@@ -380,6 +380,98 @@ result = response.json()
 }
 ```
 
+</details>
+
+Here is an example of stdin-stdout special judge evaluation. Given the input number `c`, the output number `a` and `b` should satisfy `a + b == c`. 
+The special judge program should read the file path of `stdin.txt`, `stdout.txt` and `answer.txt` to get the input, output and answer, and return exit code 0 if the output is correct, otherwise return exit code 1.
+
+```python
+payload = {
+    "completion": """```python\nc = int(input())\nprint(c-1, 1)\n```""",
+    "config": {
+        "language": "python",
+        "run_timeout": 10,
+        "provided_data": { 
+            "test_cases": 
+                {"type": "stdin_stdout", "output": ["1 2", "3 4"], "input": ["3", "7"], "fn_name": None},            
+        },
+        "extra": {
+            "run_all_cases": True,
+            "special_judge_program": '''import sys\n\ndef read_file(filepath):\n    """Read file content and return lines."""\n    with open(filepath, 'r') as f:\n        return f.read().strip().split('\\n')\n\n\ndef validate_solution(stdin_path, stdout_path, answer_path):\n    """Validate the participant's solution."""\n    \n    stdin_lines = read_file(stdin_path)\n    stdout_lines = read_file(stdout_path)\n    participant_output = read_file(answer_path)\n\n    a, b = map(int, participant_output[0].split())\n    c = a + b\n    expected_output = int(stdin_lines[0])\n    return c == expected_output\n\n    \nstdin_path = "stdin.txt"\nstdout_path = "stdout.txt"\nanswer_path = "answer.txt"\n\nis_valid = validate_solution(stdin_path, stdout_path, answer_path)\n\nif is_valid:\n    sys.exit(0)\nelse:\n    sys.exit(1)''',
+            "special_judge_language": "python",
+        }
+    }
+}
+
+response = requests.post('http://0.0.0.0:8080/common_evaluate_batch', json=payload)
+result = response.json()
+```
+
+<details>
+<summary>Response</summary>
+```json
+{
+  "id": 0,
+  "accepted": true,
+  "extracted_code": "c = int(input())\nprint(c-1, 1)",
+  "full_code": null,
+  "test_code": null,
+  "tests": [
+    {
+      "passed": true,
+      "exec_info": {
+        "status": "Success",
+        "message": "",
+        "compile_result": null,
+        "run_result": {
+          "status": "Finished",
+          "execution_time": 0.004090547561645508,
+          "return_code": 0,
+          "stdout": "2 1\n",
+          "stderr": ""
+        },
+        "executor_pod_name": null,
+        "files": {}
+      },
+      "test_info": {
+        "input": {
+          "stdin": "3"
+        },
+        "output": {
+          "stdout": "1 2"
+        }
+      }
+    },
+    {
+      "passed": true,
+      "exec_info": {
+        "status": "Success",
+        "message": "",
+        "compile_result": null,
+        "run_result": {
+          "status": "Finished",
+          "execution_time": 0.027703046798706055,
+          "return_code": 0,
+          "stdout": "6 1\n",
+          "stderr": ""
+        },
+        "executor_pod_name": null,
+        "files": {}
+      },
+      "test_info": {
+        "input": {
+          "stdin": "7"
+        },
+        "output": {
+          "stdout": "3 4"
+        }
+      }
+    }
+  ],
+  "extracted_type": null,
+  "extra": null
+}
+```
 </details>
 
 
