@@ -220,7 +220,7 @@ dataset_map = {
     'python': 'humaneval_python',
     'cpp': 'multiple_cpp',
     'typescript': 'multiple_ts',
-    'bash': 'multiple_bash',
+    'bash': 'multiple_sh',
     'csharp': 'multiple_cs',
     'go': 'multiple_go',
     'java': 'multiple_java',
