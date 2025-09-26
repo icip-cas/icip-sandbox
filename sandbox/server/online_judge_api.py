@@ -226,6 +226,7 @@ dataset_map = {
     'java': 'multiple_java',
     'lua': 'multiple_lua',
     'javascript': 'multiple_js',
+    'nodejs': 'multiple_js',
     'php': 'multiple_php',
     'perl': 'multiple_pl',
     'racket': 'multiple_rkt',
